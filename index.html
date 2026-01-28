@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Survivor Meteorix - Selección de Piloto</title>
+    <style>
+        body { 
+            /* Fondo de la pantalla de inicio */
+            background: url('assets/suvivor_meteorix.png') no-repeat center center fixed; 
+            background-size: cover;
+            color: white; 
+            font-family: 'Courier New', monospace; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            margin: 0; 
+            overflow: hidden; 
+        }
+
+        /* Capa oscura para que el fondo no brille demasiado */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+
+        #gameCanvas { 
+            border: 3px solid #ff00ff; 
+            background: #111; 
+            display: none; 
+            box-shadow: 0 0 30px #ff00ff; 
+        }
+
+        /* Menú Translúcido */
+        #menu { 
+            text-align: center; 
+            border: 2px solid #00ffcc; 
+            padding: 30px; 
+            border-radius: 20px; 
+            background: rgba(0, 0, 0, 0.75); /* Negro traslúcido */
+            backdrop-filter: blur(10px); /* Efecto de desenfoque de fondo */
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
+            max-width: 500px;
+        }
+
+        h1 { color: #ff00ff; text-shadow: 0 0 10px #ff00ff; font-size: 35px; margin-bottom: 20px; }
+        
+        .grid-pilotos { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+        
+        .piloto-card { 
+            display: flex; 
+            align-items: center; 
+            background: rgba(255, 255, 255, 0.1); 
+            padding: 10px; 
+            border-radius: 10px; 
+            border: 1px solid #00ffcc; 
+            transition: 0.3s; 
+            cursor: pointer; 
+        }
+        
+        .piloto-card:hover { 
+            border-color: #ff00ff; 
+            box-shadow: 0 0 15px #ff00ff; 
+            transform: scale(1.05); 
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .piloto-card img { width: 45px; height: 55px; margin-right: 15px; border-radius: 5px; }
+        .piloto-card span { font-weight: bold; color: #00ffcc; font-size: 14px; }
+
+        #manualModal { 
+            display: none; 
+            position: fixed; 
+            z-index: 10; 
+            left: 0; top: 0; 
+            width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.9); 
+        }
+
+        .btn-manual { 
+            background: none; 
+            color: white; 
+            border: 1px solid white; 
+            padding: 10px; 
+            cursor: pointer; 
+            margin-top: 20px; 
+            width: 100%; 
+            font-weight: bold;
+        }
+        .btn-manual:hover { background: white; color: black; }
+    </style>
+</head>
+<body>
+
+    <div id="menu">
+        <h1>SURVIVOR METEORIX</h1>
+        <p>SELECCIONA TU UNIDAD DE VUELO:</p>
+        <div class="grid-pilotos">
+            <div class="piloto-card" onclick="seleccionarPersonaje('J')">
+                <img src="assets/jugador.png"> <span>PILOTO 1</span>
+            </div>
+            <div class="piloto-card" onclick="seleccionarPersonaje('J1')">
+                <img src="assets/jugador1.png"> <span>PILOTO 2</span>
+            </div>
+            <div class="piloto-card" onclick="seleccionarPersonaje('JF')">
+                <img src="assets/jugadorF.png"> <span>PILOTA 1</span>
+            </div>
+            <div class="piloto-card" onclick="seleccionarPersonaje('JF1')">
+                <img src="assets/jugadorF1.png"> <span>PILOTA 2</span>
+            </div>
+        </div>
+        <button class="btn-manual" onclick="abrirManual()">VER MANUAL</button>
+    </div>
+
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
+    <div id="manualModal"></div>
+
+    <script src="game.js"></script>
+</body>
+</html>
