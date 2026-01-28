@@ -1,3 +1,9 @@
+// --- CONFIGURACIÓN SUPABASE (llaves reales de Supabase) ---
+const SB_URL = "https://biewptbpcxvblcwslzlh.supabase.co";
+const SB_KEY = "sb_publishable_lHI2Tii8tbiWAWcLI4gUrQ_awH5lPsf";
+
+//const canvas = document.getElementById('gameCanvas');
+// ... el resto del código sigue igual ...
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -217,4 +223,36 @@ window.addEventListener('keydown', e => {
 window.addEventListener('keyup', e => keys[e.code] = false);
 setInterval(() => { if (keys['KeyA'] && weaponLevel === 3 && gameActive && !isPaused) disparar(); }, 100);
 
-async function finalizarJuego() { gameActive = false; alert("GAME OVER - SCORE: " + score); location.reload(); }
+// ESTA ES LA FUNCIÓN REEMPLAZA A LA LOCAL POR LA WEB:
+async function finalizarJuego() {
+    gameActive = false;
+    
+    // 1. Pedimos el nombre al jugador
+    let nombreUsuario = prompt("Misión Fallida. Puntos: " + score + "\nIngresa tu nombre para el Ranking Global:");
+    
+    if (nombreUsuario) {
+        // 2. Intentamos guardar en Supabase
+        try {
+            await fetch(`${SB_URL}/rest/v1/ranking`, {
+                method: 'POST',
+                headers: {
+                    'apikey': SB_KEY,
+                    'Authorization': `Bearer ${SB_KEY}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=minimal'
+                },
+                body: JSON.stringify({
+                    nombre: nombreUsuario,
+                    puntaje: score,
+                    nivel: level
+                })
+            });
+            alert("¡Puntaje guardado con éxito!");
+        } catch (error) {
+            console.error("Error al guardar:", error);
+        }
+    }
+    
+    // 3. Reiniciamos el juego
+    location.reload();
+}}
