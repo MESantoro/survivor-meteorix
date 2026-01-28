@@ -255,4 +255,4 @@ async function finalizarJuego() {
     
     // 3. Reiniciamos el juego
     location.reload();
-}}
+}
