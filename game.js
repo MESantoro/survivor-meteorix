@@ -30,12 +30,12 @@ let boss = { x: 850, y: 200, w: 140, h: 140, health: 5, maxHealth: 5, angle: 0 }
 // --- INTERFAZ ---
 function abrirManual() {
     const modal = document.getElementById('manualModal');
-    modal.innerHTML = `<div style="background: rgba(0,0,0,0.95); border: 3px solid #ff00ff; padding: 25px; color: white; font-family: 'Courier New'; max-width: 500px; margin: 50px auto; border-radius: 15px; box-shadow: 0 0 20px #ff00ff;">
-        <h2 style="color:#ff00ff; text-align:center">🛸 MANUAL DE MISIÓN</h2>
-        <p>• <b>ESC / BOTÓN ||:</b> Pausar.</p>
-        <p>• <b>A / BOTÓN A:</b> Disparar.</p>
-        <p>• <b>JEFE:</b> Dispárale o salta sobre él.</p>
-        <button onclick="cerrarManual()" style="width:100%; background:#ff00ff; color:white; border:none; padding:10px; cursor:pointer; font-weight:bold;">¡ENTENDIDO!</button>
+    modal.innerHTML = `<div style="background: rgba(0,0,0,0.95); border: 3px solid #ff00ff; padding: 25px; color: white; font-family: 'Courier New'; max-width: 400px; margin: 20px auto; border-radius: 15px; box-shadow: 0 0 20px #ff00ff; font-size:14px;">
+        <h2 style="color:#ff00ff; text-align:center">🛸 MANUAL</h2>
+        <p>• <b>PAUSA:</b> ESC o botón ||.</p>
+        <p>• <b>DISPARO:</b> A o botón A.</p>
+        <p>• <b>SALTO:</b> Espacio o flecha ↑.</p>
+        <button onclick="cerrarManual()" style="width:100%; background:#ff00ff; color:white; border:none; padding:10px; cursor:pointer; font-weight:bold;">¡OK!</button>
     </div>`;
     modal.style.display = 'block';
 }
@@ -185,7 +185,7 @@ window.addEventListener('keydown', e => {
 });
 window.addEventListener('keyup', e => keys[e.code] = false);
 
-// EVENTOS TÁCTILES (NUEVO)
+// EVENTOS TÁCTILES INTEGRADOS
 function setupMobileControls() {
     const bindTouch = (id, key) => {
         const btn = document.getElementById(id);
@@ -224,11 +224,10 @@ setInterval(() => { if (keys['KeyA'] && weaponLevel === 3 && gameActive && !isPa
 
 async function finalizarJuego() {
     gameActive = false;
-    // Ocultar controles al terminar
     document.getElementById('mobileControls').style.display = 'none';
     document.getElementById('btnPauseMobile').style.display = 'none';
 
-    let nombreUsuario = prompt("Misión Fallida. Puntos: " + score + "\nIngresa tu nombre para el Ranking Global:");
+    let nombreUsuario = prompt("Misión Fallida. Puntos: " + score + "\nRanking:");
     if (nombreUsuario) {
         try {
             await fetch(`${SB_URL}/rest/v1/ranking`, {
@@ -241,7 +240,6 @@ async function finalizarJuego() {
                 },
                 body: JSON.stringify({ nombre: nombreUsuario, puntaje: score, nivel: level })
             });
-            alert("¡Puntaje guardado!");
         } catch (error) { console.error("Error:", error); }
     }
     location.reload();
