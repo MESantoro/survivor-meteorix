@@ -6,6 +6,7 @@
     <title>Survivor Meteorix - Selección de Piloto</title>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
         body { 
             background: url('assets/suvivor_meteorix.png') no-repeat center center fixed; 
             background-size: cover;
@@ -22,7 +23,6 @@
             touch-action: none;
         }
 
-        /* FONDO OSCURO */
         body::before {
             content: "";
             position: absolute;
@@ -31,16 +31,17 @@
             z-index: -1;
         }
 
-        /* EL CANVAS AHORA SE AJUSTA SIEMPRE */
+        /* AJUSTE RESPONSIVO TOTAL */
         #gameCanvas { 
             display: none;
             border: 2px solid #ff00ff; 
             background: #111; 
             box-shadow: 0 0 20px #ff00ff; 
-            width: 95vw !important;    /* Ocupa el ancho de la pantalla */
-            max-width: 800px;         /* No se pasa de su tamaño real */
-            height: auto !important;  /* Mantiene la proporción */
-            max-height: 70vh;         /* Deja espacio para botones abajo */
+            width: 98vw !important;    /* Casi todo el ancho del dispositivo */
+            max-width: 800px; 
+            height: auto !important; 
+            max-height: 65vh;          /* Limitamos el alto para que entren los botones */
+            aspect-ratio: 2 / 1;
             image-rendering: pixelated;
         }
 
@@ -55,34 +56,34 @@
             max-width: 400px;
         }
 
+        h1 { color: #ff00ff; text-shadow: 0 0 10px #ff00ff; font-size: clamp(18px, 6vw, 30px); margin-bottom: 15px; }
         .grid-pilotos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
         .piloto-card { display: flex; align-items: center; background: rgba(255, 255, 255, 0.1); padding: 8px; border-radius: 10px; border: 1px solid #00ffcc; cursor: pointer; }
         .piloto-card img { width: 35px; height: 45px; margin-right: 10px; }
-        .piloto-card span { font-size: 11px; }
+        .piloto-card span { font-size: 11px; font-weight: bold; }
 
-        /* CONTROLES MÓVILES POSICIONADOS POR ENCIMA */
+        /* CONTROLES MÓVILES POSICIONADOS */
         #mobileControls {
             display: none;
             position: fixed;
             bottom: 10px;
-            left: 0;
-            width: 100%;
-            padding: 0 20px;
+            width: 95%;
             justify-content: space-between;
             z-index: 100;
             pointer-events: none;
         }
-        .btn-group { display: flex; gap: 20px; pointer-events: auto; }
+        .btn-group { display: flex; gap: 15px; pointer-events: auto; }
         .control-btn {
-            width: 70px; height: 70px;
+            width: 65px; height: 65px;
             background: rgba(255, 255, 255, 0.15);
             border: 3px solid #00ffcc;
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            color: white; font-size: 28px;
+            color: white; font-size: 24px;
             touch-action: manipulation;
+            user-select: none;
         }
-        .control-btn:active { background: rgba(255, 0, 255, 0.5); border-color: #ff00ff; }
+        .control-btn:active { background: rgba(255, 0, 255, 0.4); border-color: #ff00ff; }
 
         #btnPauseMobile {
             display: none;
@@ -95,7 +96,6 @@
             border-radius: 10px;
             align-items: center; justify-content: center;
             z-index: 101;
-            font-weight: bold;
         }
 
         #rotationMessage {
@@ -117,9 +117,10 @@
     </style>
 </head>
 <body>
+
     <div id="rotationMessage">
-        <h2 style="color:#ff00ff">🛸 GIRA EL CELULAR</h2>
-        <p>Para jugar Survivor Meteorix debes poner el dispositivo en horizontal.</p>
+        <h2 style="color:#ff00ff">🔄 GIRA EL CELULAR</h2>
+        <p>Survivor Meteorix requiere modo horizontal.</p>
     </div>
 
     <div id="menu">
@@ -138,7 +139,7 @@
                 <img src="assets/jugadorF1.png"> <span>PILOTA 2</span>
             </div>
         </div>
-        <button onclick="abrirManual()" style="background:none; color:white; border:1px solid white; padding:10px; cursor:pointer; width:100%; font-size:12px;">MANUAL</button>
+        <button onclick="abrirManual()" style="background:none; color:white; border:1px solid white; padding:10px; cursor:pointer; width:100%; font-size:12px; font-weight:bold;">VER MANUAL</button>
     </div>
 
     <canvas id="gameCanvas" width="800" height="400"></canvas>
@@ -160,4 +161,5 @@
     <script src="game.js"></script>
 </body>
 </html>
+
 
