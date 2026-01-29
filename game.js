@@ -1,18 +1,23 @@
+// --- CONFIGURACIÓN SUPABASE ---
 const SB_URL = "https://biewptbpcxvblcwslzlh.supabase.co";
 const SB_KEY = "sb_publishable_lHI2Tii8tbiWAWcLI4gUrQ_awH5lPsf";
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+// --- ASSETS ---
 const imgMeteoro = new Image(); imgMeteoro.src = 'assets/meteorito.png';
 const imgExplosion = new Image(); imgExplosion.src = 'assets/explosion.png';
 const imgBg = new Image(); imgBg.src = 'assets/suvivor_meteorix.png';
 const sndGolpe = new Audio('assets/golpe.mp3');
+
 const bossSkins = ['assets/alien.png', 'assets/alien1.png', 'assets/alien2.png'];
 const imgAlien = new Image(); 
+
 const playerSkins = { 'J': 'assets/jugador.png', 'J1': 'assets/jugador1.png', 'JF': 'assets/jugadorF.png', 'JF1': 'assets/jugadorF1.png' };
 let imgActual = new Image();
 
+// --- ESTADO ---
 let score = 0, level = 1, gameActive = false, isPaused = false;
 let obstacles = [], bossProjectiles = [], playerProjectiles = [], powerUps = [];
 let bossActive = false, bossDefeated = false, defeatTimer = 0;
@@ -22,13 +27,16 @@ const keys = {};
 let player = { x: 50, y: 340, w: 50, h: 60, dy: 0, speed: 6, jumpPower: 12, gravity: 0.6, grounded: true, jumpCount: 0 };
 let boss = { x: 850, y: 200, w: 140, h: 140, health: 5, maxHealth: 5, angle: 0 };
 
+// --- INTERFAZ ---
 function abrirManual() {
     const modal = document.getElementById('manualModal');
-    modal.innerHTML = `<div style="background: rgba(0,0,0,0.95); border: 2px solid #ff00ff; padding: 20px; color: white; font-family: 'Courier New'; max-width: 300px; margin: 20px auto; border-radius: 15px; font-size:12px;">
-        <h2 style="color:#ff00ff; text-align:center">MISION</h2>
-        <p>• PAUSA: || | DISPARO: A</p>
-        <p>• JEFE: Salta sobre él o dispara.</p>
-        <button onclick="cerrarManual()" style="width:100%; background:#ff00ff; color:white; border:none; padding:8px; cursor:pointer;">¡ENTENDIDO!</button>
+    modal.innerHTML = `<div style="background: rgba(0,0,0,0.95); border: 2px solid #ff00ff; padding: 25px; color: white; font-family: 'Courier New'; max-width: 350px; margin: 50px auto; border-radius: 15px; text-align:center;">
+        <h2 style="color:#ff00ff;">MISION</h2>
+        <p>• MOVER: Flechas / Botones Izq-Der</p>
+        <p>• SALTAR: Espacio / Botón ↑</p>
+        <p>• DISPARAR: Tecla A / Botón A</p>
+        <p>• PAUSA: Esc / Botón ||</p>
+        <button onclick="cerrarManual()" style="width:100%; background:#ff00ff; color:white; border:none; padding:10px; cursor:pointer; font-weight:bold;">¡ENTENDIDO!</button>
     </div>`;
     modal.style.display = 'block';
 }
@@ -76,6 +84,7 @@ function update() {
         boss.x -= (1 + level * 0.3); if (boss.x < -150) boss.x = 850;
         boss.angle += 0.04; boss.y = 150 + Math.sin(boss.angle) * 130;
         if (Math.random() < 0.02 + (level * 0.005)) bossProjectiles.push({ x: boss.x + boss.w/2, y: boss.y + boss.h, r: 8, vy: 4 + level });
+
         for (let j = playerProjectiles.length - 1; j >= 0; j--) {
             let b = playerProjectiles[j];
             if (checkCollision(b, boss)) {
@@ -155,6 +164,7 @@ function checkCollision(a, b) {
 
 function loop() { update(); draw(); if (gameActive) requestAnimationFrame(loop); }
 
+// EVENTOS TECLADO
 window.addEventListener('keydown', e => {
     if (e.code === 'Escape' && gameActive) { isPaused = !isPaused; return; }
     if (isPaused) { isPaused = false; return; }
@@ -166,7 +176,7 @@ window.addEventListener('keydown', e => {
 });
 window.addEventListener('keyup', e => keys[e.code] = false);
 
-// CONTROLES TÁCTILES
+// EVENTOS TÁCTILES
 function setupMobileControls() {
     const bindTouch = (id, key) => {
         const btn = document.getElementById(id);
@@ -178,10 +188,15 @@ function setupMobileControls() {
                 if (gameActive && (player.grounded || player.jumpCount < 2)) {
                     player.dy = -player.jumpPower; player.grounded = false; player.jumpCount++;
                 }
-            } else if (key === 'KeyA') { disparar(); }
+            } else if (key === 'KeyA') {
+                disparar(); // Disparo manual al tocar el botón A
+            }
             keys[key] = true;
         });
-        btn.addEventListener('touchend', e => { e.preventDefault(); keys[key] = false; });
+        btn.addEventListener('touchend', e => {
+            e.preventDefault();
+            keys[key] = false;
+        });
     };
 
     bindTouch('btnLeft', 'ArrowLeft');
@@ -190,10 +205,16 @@ function setupMobileControls() {
     bindTouch('btnShoot', 'KeyA');
 
     document.getElementById('btnPauseMobile').addEventListener('touchstart', e => {
-        e.preventDefault(); if (gameActive) isPaused = !isPaused;
+        e.preventDefault();
+        if (gameActive) isPaused = !isPaused;
     });
 }
 setupMobileControls();
+
+// Ráfaga automática SOLO en nivel 3 si se mantiene presionado A
+setInterval(() => {
+    if (keys['KeyA'] && weaponLevel === 3 && gameActive && !isPaused) disparar();
+}, 120);
 
 async function finalizarJuego() {
     gameActive = false;
