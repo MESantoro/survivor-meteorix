@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Survivor Meteorix - Selección de Piloto</title>
     <style>
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
             background: url('assets/suvivor_meteorix.png') no-repeat center center fixed; 
             background-size: cover;
@@ -18,96 +18,90 @@
             height: 100vh; 
             width: 100vw;
             margin: 0; 
-            padding: 0;
             overflow: hidden; 
             touch-action: none;
         }
 
+        /* FONDO OSCURO */
         body::before {
             content: "";
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.6);
             z-index: -1;
         }
 
-        /* EL TRUCO PARA QUE SE AJUSTE: Ancho dinámico y centrado */
+        /* EL CANVAS AHORA SE AJUSTA SIEMPRE */
         #gameCanvas { 
+            display: none;
             border: 2px solid #ff00ff; 
             background: #111; 
-            display: none; 
             box-shadow: 0 0 20px #ff00ff; 
-            width: 90vw;      /* Ocupa el 90% del ancho de la pantalla */
-            max-width: 800px; /* Pero nunca más de 800px */
-            height: auto;     /* Calcula el alto automáticamente para no deformar */
-            aspect-ratio: 2 / 1; 
+            width: 95vw !important;    /* Ocupa el ancho de la pantalla */
+            max-width: 800px;         /* No se pasa de su tamaño real */
+            height: auto !important;  /* Mantiene la proporción */
+            max-height: 70vh;         /* Deja espacio para botones abajo */
+            image-rendering: pixelated;
         }
 
         #menu { 
             text-align: center; 
             border: 2px solid #00ffcc; 
-            padding: 15px; 
+            padding: 20px; 
             border-radius: 20px; 
-            background: rgba(0, 0, 0, 0.85); 
+            background: rgba(0, 0, 0, 0.9); 
             backdrop-filter: blur(10px); 
-            width: 85%;
+            width: 90%;
             max-width: 400px;
-            z-index: 10;
         }
 
-        h1 { color: #ff00ff; text-shadow: 0 0 10px #ff00ff; font-size: clamp(18px, 5vw, 30px); margin: 10px 0; }
-        .grid-pilotos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        .piloto-card { display: flex; align-items: center; background: rgba(255, 255, 255, 0.1); padding: 5px; border-radius: 8px; border: 1px solid #00ffcc; cursor: pointer; }
-        .piloto-card img { width: 35px; height: 45px; margin-right: 8px; }
-        .piloto-card span { font-size: 10px; font-weight: bold; }
+        .grid-pilotos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+        .piloto-card { display: flex; align-items: center; background: rgba(255, 255, 255, 0.1); padding: 8px; border-radius: 10px; border: 1px solid #00ffcc; cursor: pointer; }
+        .piloto-card img { width: 35px; height: 45px; margin-right: 10px; }
+        .piloto-card span { font-size: 11px; }
 
-        /* CONTROLES TÁCTILES MEJORADOS */
+        /* CONTROLES MÓVILES POSICIONADOS POR ENCIMA */
         #mobileControls {
             display: none;
             position: fixed;
-            bottom: 15px;
-            width: 95%;
+            bottom: 10px;
+            left: 0;
+            width: 100%;
+            padding: 0 20px;
             justify-content: space-between;
             z-index: 100;
             pointer-events: none;
         }
-        .btn-group { display: flex; gap: 10px; pointer-events: auto; }
+        .btn-group { display: flex; gap: 20px; pointer-events: auto; }
         .control-btn {
-            width: 60px; height: 60px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid #00ffcc;
+            width: 70px; height: 70px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 3px solid #00ffcc;
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            color: white; font-size: 20px;
+            color: white; font-size: 28px;
             touch-action: manipulation;
         }
-        .control-btn:active { background: rgba(255, 0, 255, 0.5); }
+        .control-btn:active { background: rgba(255, 0, 255, 0.5); border-color: #ff00ff; }
 
         #btnPauseMobile {
             display: none;
             position: fixed;
             top: 10px; right: 10px;
-            width: 40px; height: 40px;
-            background: rgba(0,0,0,0.7);
+            width: 45px; height: 45px;
+            background: rgba(0,0,0,0.8);
             border: 2px solid #ff00ff;
             color: #ff00ff;
-            border-radius: 8px;
+            border-radius: 10px;
             align-items: center; justify-content: center;
             z-index: 101;
+            font-weight: bold;
         }
 
-        /* AVISO DE ROTACIÓN */
         #rotationMessage {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #000;
-            z-index: 9999;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #00ffcc;
-            font-weight: bold;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 9999; flex-direction: column; align-items: center; justify-content: center;
+            color: #00ffcc; text-align: center; padding: 20px;
         }
 
         @media (pointer: coarse) {
@@ -123,10 +117,9 @@
     </style>
 </head>
 <body>
-
     <div id="rotationMessage">
-        <h2 style="color:#ff00ff">🛸 POR FAVOR</h2>
-        <p>GIRÁ TU CELULAR HORIZONTALMENTE</p>
+        <h2 style="color:#ff00ff">🛸 GIRA EL CELULAR</h2>
+        <p>Para jugar Survivor Meteorix debes poner el dispositivo en horizontal.</p>
     </div>
 
     <div id="menu">
@@ -145,7 +138,7 @@
                 <img src="assets/jugadorF1.png"> <span>PILOTA 2</span>
             </div>
         </div>
-        <button onclick="abrirManual()" style="background:none; color:white; border:1px solid white; padding:8px; cursor:pointer; width:100%; font-size:12px;">VER MANUAL</button>
+        <button onclick="abrirManual()" style="background:none; color:white; border:1px solid white; padding:10px; cursor:pointer; width:100%; font-size:12px;">MANUAL</button>
     </div>
 
     <canvas id="gameCanvas" width="800" height="400"></canvas>
@@ -159,7 +152,7 @@
         </div>
         <div class="btn-group">
             <div class="control-btn" id="btnJump">↑</div>
-            <div class="control-btn" id="btnShoot" style="border-color: #ff00ff;">A</div>
+            <div class="control-btn" id="btnShoot" style="border-color: #ff00ff; color: #ff00ff;">A</div>
         </div>
     </div>
 
@@ -167,3 +160,4 @@
     <script src="game.js"></script>
 </body>
 </html>
+
